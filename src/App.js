@@ -1,23 +1,57 @@
-import logo from './logo.svg';
 import './App.css';
+import {useState,useEffect} from 'react'
+
 
 function App() {
+  const [images,setImages] =useState([]);
+  const [isLoaded,setIsLoaded]=useState(false);
+
+  function loadImage(){
+    fetch("https://api.imgflip.com/get_memes")
+    .then(res=>res.json())
+    .then(
+      (result)=>{
+      console.log(result);
+      const gallery=[];
+      for (let i=0;i<result.data.memes.length;i++) {
+        gallery.push(result.data.memes[i]);
+      }
+      setIsLoaded(true);
+      setImages(gallery);
+    })
+  }
+
+  useEffect(()=>{
+    loadImage();
+  },[]);
+
+
+  if (!isLoaded) { return<div>
+    Loading
+  </div>; }
+  else
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div >
+      <div className='container'>
+        <div className='center'>
+          <button  onClick={()=>loadImage()}>
+          Reload
+          </button>
+        </div>
+      </div>
+     
+      <ul >
+        {
+          images.map((imageSrc,index)=>(
+            <div className='gallery'>
+               <img src={imageSrc.url} key={index}>
+              
+              </img>
+            </div>
+           
+          ))
+        }
+      </ul>
     </div>
   );
 }
